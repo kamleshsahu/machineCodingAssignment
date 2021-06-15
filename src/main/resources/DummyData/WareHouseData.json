@@ -1,0 +1,50 @@
+{
+  "WareHouseData": [
+    {
+      "warehouse_id": 100,
+      "items": [
+        {
+          "item_id": 1,
+          "item_name": "Washington Apple (1 pc)",
+          "category": "F_N_V",
+          "quantity": 323
+        },
+        {
+          "item_id": 2,
+          "item_name": "Banana (0.5kg)",
+          "category": "F_N_V",
+          "quantity": 100
+        },
+        {
+          "item_id": 3,
+          "item_name": "Parle-G Biscuit (200g)",
+          "category": "Grocery",
+          "quantity": 120
+        }
+      ]
+    },
+    {
+      "warehouse_id": 101,
+      "items": [
+        {
+          "item_id": 1,
+          "item_name": "Washington Apple (1 pc)",
+          "category": "F_N_V",
+          "quantity": 130
+        },
+        {
+          "item_id": 2,
+          "item_name": "Banana (0.5kg)",
+          "category": "F_N_V",
+          "quantity": 130
+        },
+        {
+          "item_id": 3,
+          "item_name": "Parle-G Biscuit (200g)",
+          "category": "Grocery",
+          "quantity": 160
+        }
+      ]
+    }
+  ]
+}

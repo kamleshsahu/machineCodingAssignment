@@ -1,0 +1,30 @@
+{
+  "categoryThreshhold": [
+    {
+      "name": "F_N_V",
+      "details": [
+        {
+          "date": "14/06/2021",
+          "limit": 150
+        },
+        {
+          "date": "15/06/2021",
+          "limit": 150
+        }
+      ]
+    },
+    {
+      "name": "Grocery",
+      "details": [
+        {
+          "date": "14/06/2021",
+          "limit": 120
+        },
+        {
+          "date": "15/06/2021",
+          "limit": 100
+        }
+      ]
+    }
+  ]
+}
