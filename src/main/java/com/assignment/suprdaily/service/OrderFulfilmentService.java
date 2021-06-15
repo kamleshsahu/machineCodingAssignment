@@ -1,6 +1,6 @@
 package com.assignment.suprdaily.service;
 
-import com.assignment.suprdaily.Entity.OrderRequest;
+import com.assignment.suprdaily.entity.OrderRequest;
 import com.assignment.suprdaily.exception.OrderReservationException;
 
 public interface OrderFulfilmentService {

@@ -1,10 +1,10 @@
 package com.assignment.suprdaily.controller;
 
 
-import com.assignment.suprdaily.Entity.CanFulfilOrderResponse;
-import com.assignment.suprdaily.Entity.Data;
-import com.assignment.suprdaily.Entity.OrderRequest;
-import com.assignment.suprdaily.Entity.ReserveOrderResponse;
+import com.assignment.suprdaily.entity.CanFulfilOrderResponse;
+import com.assignment.suprdaily.entity.Data;
+import com.assignment.suprdaily.entity.OrderRequest;
+import com.assignment.suprdaily.entity.ReserveOrderResponse;
 import com.assignment.suprdaily.exception.OrderReservationException;
 import com.assignment.suprdaily.service.OrderFulfilmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +27,9 @@ public class OrderController {
 
     @PostMapping("/canFulfilOrder")
     public ResponseEntity<CanFulfilOrderResponse> canFulfilOrder(@RequestBody OrderRequest orderRequest) {
-        service.canFulfilOrder(orderRequest);
+        Boolean canFulfilOrder = service.canFulfilOrder(orderRequest);
         CanFulfilOrderResponse response = CanFulfilOrderResponse.builder()
-                .canFulfil(service.canFulfilOrder(orderRequest)).build();
+                .canFulfil(canFulfilOrder).build();
 
         return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
     }

@@ -1,7 +1,7 @@
 package com.assignment.suprdaily.service.impl;
 
-import com.assignment.suprdaily.Entity.Item;
-import com.assignment.suprdaily.Entity.OrderRequest;
+import com.assignment.suprdaily.entity.Item;
+import com.assignment.suprdaily.entity.OrderRequest;
 import com.assignment.suprdaily.exception.OrderReservationException;
 import com.assignment.suprdaily.repository.WarehouseRepository;
 import com.assignment.suprdaily.service.OrderFulfilmentService;
@@ -16,10 +16,10 @@ import java.util.Map;
 
 @Service
 public class OrderFulfilmentServiceImpl implements OrderFulfilmentService {
-    private static String MESSAGE_INSUFFICIENT_QUANTITIES = "Insufficient quantities!";
+    private static final String MESSAGE_INSUFFICIENT_QUANTITIES = "Insufficient quantities!";
 
     @Autowired
-    WarehouseRepository warehouse;
+    private WarehouseRepository warehouse;
 
     @Override
     public Boolean canFulfilOrder(OrderRequest orderRequest) {

@@ -1,4 +1,4 @@
-package com.assignment.suprdaily.Entity;
+package com.assignment.suprdaily.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;

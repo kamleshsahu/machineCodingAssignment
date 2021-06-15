@@ -5,7 +5,6 @@ import com.assignment.suprdaily.repository.WarehouseRepository;
 import org.springframework.stereotype.Repository;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -63,7 +62,7 @@ public class WarehouseRepositoryImpl implements WarehouseRepository {
         quantityLeftByCategory.put("Grocery", quantityByDate);
     }
 
-    private Map<String, Integer> getQuantityByDate() throws ParseException {
+    private Map<String, Integer> getQuantityByDate() {
         String date1 = "2021-06-14";
         String date2 = "2021-06-15";
 
