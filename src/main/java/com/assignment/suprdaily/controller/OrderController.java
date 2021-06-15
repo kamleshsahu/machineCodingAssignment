@@ -1,6 +1,5 @@
 package com.assignment.suprdaily.controller;
 
-
 import com.assignment.suprdaily.entity.CanFulfilOrderResponse;
 import com.assignment.suprdaily.entity.Data;
 import com.assignment.suprdaily.entity.OrderRequest;
@@ -40,7 +39,7 @@ public class OrderController {
         } catch (DataNotAvailableException exception) {
             log.error(exception.getMessage());
             CanFulfilOrderResponse response = CanFulfilOrderResponse.builder()
-                    .canFulfil(false).build();
+                    .canFulfil(false).message(exception.getMessage()).build();
             return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
         }
     }
