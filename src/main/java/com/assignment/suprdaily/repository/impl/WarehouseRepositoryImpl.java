@@ -1,6 +1,8 @@
 package com.assignment.suprdaily.repository.impl;
 
 
+import com.assignment.suprdaily.exception.DataNotAvailableException;
+import com.assignment.suprdaily.exception.OrderReservationException;
 import com.assignment.suprdaily.repository.WarehouseRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,38 +15,87 @@ import java.util.Map;
 @Repository
 public class WarehouseRepositoryImpl implements WarehouseRepository {
 
-    Map<Integer, Map<Integer, Map<String, Integer>>> wareHouseData = new HashMap<>();
-    Map<String, Map<String, Integer>> quantityLeftByCategory = new HashMap<>();
+   private final Map<Integer, Map<Integer, Map<String, Integer>>> wareHouseData;
 
-    WarehouseRepositoryImpl() throws Exception {
+   private final Map<String, Map<String, Integer>> quantityLeftByCategory;
+
+    WarehouseRepositoryImpl() {
+        wareHouseData = new HashMap<>();
+        quantityLeftByCategory = new HashMap<>();
         addDummyData();
         addDummyCategoryData();
     }
 
     @Override
-    public int getQuantityAvailableByItemAndWarehouseAndDate(int wareHouseId, int itemId, Date date) {
-        return wareHouseData.get(wareHouseId).get(itemId).get(dateToString(date));
+    public int getQuantityAvailableByItemAndWarehouseAndDate(int wareHouseId, int itemId, Date date) throws DataNotAvailableException {
+        String dateToString = dateToString(date);
+
+        areParamsValid(wareHouseId,itemId,dateToString);
+
+        return wareHouseData.get(wareHouseId).get(itemId).get(dateToString);
     }
 
     @Override
-    public void updateQuantityAvailableByItemAndWarehouseAndDate(int wareHouseId, int itemId, Date date, int consumedQuantity) {
-        int quantityAvailable = wareHouseData.get(wareHouseId).get(itemId).get(dateToString(date));
-        wareHouseData.get(wareHouseId).get(itemId).put(dateToString(date), quantityAvailable - consumedQuantity);
+    public void updateQuantityAvailableByItemAndWarehouseAndDate(int wareHouseId, int itemId, Date date, int consumedQuantity) throws DataNotAvailableException, OrderReservationException {
+        String dateToString = dateToString(date);
+        areParamsValid(wareHouseId,itemId,dateToString);
+        int quantityAvailable = wareHouseData.get(wareHouseId).get(itemId).get(dateToString);
+        isValidUpdate(quantityAvailable,consumedQuantity,false);
+        wareHouseData.get(wareHouseId).get(itemId).put(dateToString, quantityAvailable - consumedQuantity);
     }
 
     @Override
-    public int getAvailabilityByCategoryAmongAllWarehouse(String category, Date date) {
-        return quantityLeftByCategory.get(category).get(dateToString(date));
+    public int getAvailabilityByCategoryAmongAllWarehouse(String category, Date date) throws DataNotAvailableException {
+        String dateToString = dateToString(date);
+        areParamsValid(category,dateToString);
+        return quantityLeftByCategory.get(category).get(dateToString);
     }
 
     @Override
-    public void updateAvailabilityByCategoryAmongAllWarehouse(String category, Date date, int consumedQuantity) {
+    public void updateAvailabilityByCategoryAmongAllWarehouse(String category, Date date, int consumedQuantity) throws DataNotAvailableException, OrderReservationException {
+        String dateToString = dateToString(date);
+        areParamsValid(category,dateToString);
         int quantityAvailableByCategory = quantityLeftByCategory.get(category).get(dateToString(date));
+        isValidUpdate(quantityAvailableByCategory,consumedQuantity,true);
         quantityLeftByCategory.get(category).put(dateToString(date), quantityAvailableByCategory - consumedQuantity);
     }
 
+    private void areParamsValid( int wareHouseId,int itemId, String date) throws DataNotAvailableException {
+        if(!wareHouseData.containsKey(wareHouseId)){
+            String message = String.format("WareHouse:%s not present",wareHouseId);
+            throw new DataNotAvailableException(message);
+        }
+        else if(!wareHouseData.get(wareHouseId).containsKey(itemId)){
+            String message = String.format("item:%s not present in WareHouse:%s",itemId,wareHouseId);
+            throw new DataNotAvailableException(message);
+        }
+        else if(!wareHouseData.get(wareHouseId).get(itemId).containsKey(date)){
+            String message = String.format("item:%s not present in WareHouse:%s for date:%s",itemId,wareHouseId,date);
+            throw new DataNotAvailableException(message);
+        }
+    }
 
-    private void addDummyData() throws Exception {
+    private void isValidUpdate(int quantityAvailable, int consumedQuantity, boolean isCateoryLimitCheck) throws OrderReservationException {
+        if(consumedQuantity>quantityAvailable) {
+            String message =
+                    String.format("%s available:%s, required:%s", quantityAvailable, consumedQuantity,
+                            (isCateoryLimitCheck)?"Category Limit Exceed":"Quantity unavailable in WareHouse");
+            throw new OrderReservationException(message);
+        }
+    }
+
+    private void areParamsValid(String category, String date) throws DataNotAvailableException {
+        if(!quantityLeftByCategory.containsKey(category)){
+            String message = String.format("Category:%s not present",category);
+            throw new DataNotAvailableException(message);
+        }
+        else if(!quantityLeftByCategory.get(category).containsKey(date)){
+            String message = String.format("category:%s details not present for date:%s",category,date);
+            throw new DataNotAvailableException(message);
+        }
+    }
+
+    private void addDummyData() {
 
         Map<String, Integer> quantityByDate = getQuantityByDate();
 
@@ -56,7 +107,7 @@ public class WarehouseRepositoryImpl implements WarehouseRepository {
         wareHouseData.put(101, itemData);
     }
 
-    private void addDummyCategoryData() throws Exception {
+    private void addDummyCategoryData() {
         Map<String, Integer> quantityByDate = getQuantityByDate();
         quantityLeftByCategory.put("F_N_V", quantityByDate);
         quantityLeftByCategory.put("Grocery", quantityByDate);

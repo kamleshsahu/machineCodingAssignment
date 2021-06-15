@@ -5,8 +5,10 @@ import com.assignment.suprdaily.entity.CanFulfilOrderResponse;
 import com.assignment.suprdaily.entity.Data;
 import com.assignment.suprdaily.entity.OrderRequest;
 import com.assignment.suprdaily.entity.ReserveOrderResponse;
+import com.assignment.suprdaily.exception.DataNotAvailableException;
 import com.assignment.suprdaily.exception.OrderReservationException;
 import com.assignment.suprdaily.service.OrderFulfilmentService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/v1")
 @Validated
+@Slf4j
 public class OrderController {
     private static final String SUCCESS_MESSAGE = "success";
     @Autowired
@@ -27,11 +30,19 @@ public class OrderController {
 
     @PostMapping("/canFulfilOrder")
     public ResponseEntity<CanFulfilOrderResponse> canFulfilOrder(@RequestBody OrderRequest orderRequest) {
-        Boolean canFulfilOrder = service.canFulfilOrder(orderRequest);
-        CanFulfilOrderResponse response = CanFulfilOrderResponse.builder()
-                .canFulfil(canFulfilOrder).build();
+        try {
+            Boolean canFulfilOrder = service.canFulfilOrder(orderRequest);
+            CanFulfilOrderResponse response = CanFulfilOrderResponse.builder()
+                    .canFulfil(canFulfilOrder).build();
 
-        return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+
+        } catch (DataNotAvailableException exception) {
+            log.error(exception.getMessage());
+            CanFulfilOrderResponse response = CanFulfilOrderResponse.builder()
+                    .canFulfil(false).build();
+            return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+        }
     }
 
     @PostMapping("/reserveOrder")
@@ -42,10 +53,16 @@ public class OrderController {
             ReserveOrderResponse response = ReserveOrderResponse.builder()
                     .data(Data.builder().reserved(true).message(SUCCESS_MESSAGE).build())
                     .code(SUCCESS_MESSAGE).build();
-
             return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
 
         } catch (OrderReservationException exception) {
+            ReserveOrderResponse response = ReserveOrderResponse.builder()
+                    .data(Data.builder().reserved(false).message(exception.getMessage()).build())
+                    .code(SUCCESS_MESSAGE).build();
+            return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+
+        } catch (DataNotAvailableException exception) {
+            log.error(exception.getMessage());
             ReserveOrderResponse response = ReserveOrderResponse.builder()
                     .data(Data.builder().reserved(false).message(exception.getMessage()).build())
                     .code(SUCCESS_MESSAGE).build();

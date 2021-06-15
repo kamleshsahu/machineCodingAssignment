@@ -1,6 +1,7 @@
 package com.assignment.suprdaily.service;
 
 import com.assignment.suprdaily.entity.OrderRequest;
+import com.assignment.suprdaily.exception.DataNotAvailableException;
 import com.assignment.suprdaily.exception.OrderReservationException;
 
 public interface OrderFulfilmentService {
@@ -11,7 +12,7 @@ public interface OrderFulfilmentService {
      * @param orderRequest Order Request that customer is trying to order.
      * @return true if we can take this order, false if we cannot.
      */
-    Boolean canFulfilOrder(OrderRequest orderRequest);
+    Boolean canFulfilOrder(OrderRequest orderRequest) throws DataNotAvailableException;
     /**
      * Reserves the items in the order request. This is usually called by client
      * after checking the above method. If an order is reserved,
@@ -20,5 +21,5 @@ public interface OrderFulfilmentService {
      * @param orderRequest Order Request that customer is trying to order.
      * @throws OrderReservationException if we cannot take that order.
      */
-    void reserveOrder(OrderRequest orderRequest) throws OrderReservationException;
+    void reserveOrder(OrderRequest orderRequest) throws OrderReservationException, DataNotAvailableException;
 }
